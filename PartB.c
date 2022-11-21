@@ -15,6 +15,7 @@ typedef struct student_marks
 } student_marks;
 
 float getMax();
+float getMin();
 
 
 int main(void)
@@ -126,3 +127,91 @@ int main(void)
     return (0);
 }
 
+float getMax()
+{
+    FILE *fd;
+    student_marks student;
+    float max =0;
+    int err_No;
+    
+    //open file "Student_Data.txt" with read option
+    fd = fopen("Student_Data.txt", "r");
+    if (fd == NULL)
+    {
+        printf("Student_Data.txt: File could not be opened ");
+        perror("Student_Data.txt: ");
+        printf("The error number is: %d\n", errno);
+        exit(1);
+    }
+    while (1)
+    {
+        //read a single data record from file 
+        fread(&student, sizeof(student_marks), 1, fd);
+        if (feof(fd))
+        {
+            break;
+        }
+        if ((err_No = ferror(fd)) > 0)
+        {
+            perror("fread Student_Data.txt ");
+            printf("ferror: %d\n", err_No);
+            exit(1);
+        }
+        else
+        {
+            if(student.assignmt01_marks>max)
+            {
+                max = student.assignmt01_marks;
+            }
+            
+        }
+    }
+    
+    fclose(fd);
+    return max;
+}
+
+float getMin()
+{
+    FILE *fd;
+    student_marks student;
+    float min =0;
+    float result =0;
+    int err_No;
+    
+    //open file "Student_Data.txt" with read option
+    fd = fopen("Student_Data.txt", "r");
+    if (fd == NULL)
+    {
+        printf("Student_Data.txt: File could not be opened ");
+        perror("Student_Data.txt: ");
+        printf("The error number is: %d\n", errno);
+        exit(1);
+    }
+    while (1)
+    {
+        //read a single data record from file 
+        fread(&student, sizeof(student_marks), 1, fd);
+        if (feof(fd))
+        {
+            break;
+        }
+        if ((err_No = ferror(fd)) > 0)
+        {
+            perror("fread Student_Data.txt ");
+            printf("ferror: %d\n", err_No);
+            exit(1);
+        }
+        else
+        {
+            if(student.assignmt01_marks<min)
+            {
+                min = student.assignmt01_marks;
+            } 
+           
+        }
+    }
+    
+    fclose(fd);
+    return result;
+}
