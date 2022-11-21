@@ -1,3 +1,5 @@
+//EG_2018_3318
+
 #include <stdio.h> //For printf and scanf
 #include <stdlib.h> //Functions like "exit" is defined in here
 #include <unistd.h> //For fork()
