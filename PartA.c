@@ -9,7 +9,8 @@
 #define RANDOM_H_
 #define STUDENT_H_
 
-
+void allData(void);
+void Divider();
 
 // structure definition of Student Data
 typedef struct student_marks
@@ -41,11 +42,11 @@ int main(int argc, char const *argv[])
         switch (p)
         {
         case 1:
-            // Divider();
-            // insertStudent();
+            //Divider();
+            //insertStudent();
             break;
         case 2:
-            // readAllRecords();
+            allData();
             break;
         case 3:
             // Divider();
@@ -67,3 +68,57 @@ int main(int argc, char const *argv[])
     return 0;
 }
 
+void allData()
+{
+    Divider();
+
+    FILE *fd;
+    student_marks student;
+    int index = 1;
+    int err_No;
+    
+
+    Divider();
+    printf("| %-6s | %-20s | %-20s | %-20s | %-20s | %-20s  | \n","No" ,"Student Index", "Assignment 01",
+                   "Assignment 02", "Project Marks", "Final Marks");
+    Divider();
+
+    //open file with read option
+    fd = fopen("Student_Data.txt", "r");
+    if (fd == NULL)
+    {
+        printf("Student_Data.txt: could not read the file ");
+        perror("Student_Data.txt: ");
+        printf("The error number is: %d\n", errno);
+        exit(1);
+    }
+    while (1)
+    {
+        //read one data from file 
+        fread(&student, sizeof(student_marks), 1, fd);
+        if (feof(fd))
+        {
+            break;
+        }
+        if ((err_No = ferror(fd)) > 0)
+        {
+            perror("fread Student_Data.txt ");
+            printf("ferror: %d\n", err_No);
+            exit(1);
+        }
+        else
+        {
+            //print records
+            printf("| %-6d | %-20s | %-20.2f | %-20.2f | %-20.2f | %-20.2f  | \n",index ,student.student_index, student.assignmt01_marks, student.assignmt02_marks, student.project_marks, student.finalExam_marks);
+            index++;
+            
+        }
+    }
+    
+    printf("\n");
+    fclose(fd);
+}
+
+void Divider(){
+    printf("******************************************************************************************************************************\n");
+}
