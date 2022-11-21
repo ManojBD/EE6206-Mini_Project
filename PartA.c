@@ -1,17 +1,17 @@
-#define _GNU_SOURCE
-#include <stdio.h>  // for printf function
-#include <stdlib.h> // for exit function
-#include <string.h> // for manipulating arrays of characters.
-#include <errno.h>  // for error handling
+#define _GNU_SOURCE //For string.h
+#include <stdio.h>  //For printf and scanf
+#include <stdlib.h> //Functions like "exit" is defined in here
+#include <string.h> //For string manipulation functions
+#include <errno.h>  //For error handling
 
-
+//Defining functions
 void printAllData(void);
 void insertStd(void);
 void updateStd();
 void deleteStd();
 void printDivider(void);
 
-// structure definition of Student Data
+//Defining student_marks structure
 typedef struct student_marks
 {
     char student_index[20];
@@ -27,6 +27,7 @@ int main(int argc, char const *argv[])
     int userInp;
     
      do{
+        //Print Menu
         printDivider();
         printf("Module Code: ZZ6309\n");
         printf("Module Name: Linux Operating System\n");
@@ -37,7 +38,7 @@ int main(int argc, char const *argv[])
         scanf("%d", &userInp);
 
       
-
+        //User selection
         switch (userInp)
         {
         case 1:
@@ -75,14 +76,15 @@ void printAllData()
     int index = 1;
     int err_No;
     
+    //Print column headers of the student data table
     printf("\n");
     printDivider();
-    printf("| %-5s | %-15s | %-15s | %-15s | %-15s | %-15s  | \n","No" ,"Student Index", "Assignment 01",
-                   "Assignment 02", "Project Marks", "Final Marks");
+    printf("| %-5s | %-15s | %-15s | %-15s | %-15s | %-15s  | \n","No" ,"Index", "Assignment 01", "Assignment 02", "Project Marks", "Final Marks");
     printDivider();
 
     //open file with read option
     fd = fopen("Student_Data.txt", "r");
+    //Error handling for fopen
     if (fd == NULL)
     {
         printf("Student_Data.txt: could not read the file ");
@@ -98,7 +100,7 @@ void printAllData()
         {
             break;
         }
-        if ((err_No = ferror(fd)) > 0)
+        if ((err_No = ferror(fd)) > 0)//Error handling
         {
             perror("fread Student_Data.txt ");
             printf("ferror: %d\n", err_No);
@@ -106,7 +108,7 @@ void printAllData()
         }
         else
         {
-            //print records
+            //print student data records
             printf("| %-5d | %-15s | %-15.2f | %-15.2f | %-15.2f | %-15.2f  | \n",index ,student.student_index, student.assignmt01_marks, student.assignmt02_marks, student.project_marks, student.finalExam_marks);
             index++;
             
@@ -117,10 +119,10 @@ void printAllData()
     fclose(fd);
 }
 
+//Function for divider line
 void printDivider(){
     printf("====================================================================================================\n");
 }
-
 
 
 //Function to insert new student record

@@ -1,10 +1,11 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <errno.h>
-#include <sys/wait.h>
-#include <sys/types.h>
+#include <stdio.h> //For printf and scanf
+#include <stdlib.h> //Functions like "exit" is defined in here
+#include <unistd.h> //For fork()
+#include <errno.h> //For error handling
+#include <sys/wait.h> //For waitpid
+#include <sys/types.h> //For system calls
 
+//Defining student_marks structure
 typedef struct student_marks
 {
     char student_index[20];
@@ -14,6 +15,7 @@ typedef struct student_marks
     float finalExam_marks;
 } student_marks;
 
+//Defining functions
 float getMax();
 float getMin();
 float getAvg();
