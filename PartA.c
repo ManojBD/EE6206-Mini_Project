@@ -11,6 +11,7 @@
 
 void printAllData(void);
 void insertStd(void);
+void updateStd();
 void deleteStd();
 void printDivider(void);
 
@@ -28,43 +29,40 @@ void addRecord(student_marks student);
 
 int main(int argc, char const *argv[])
 {
-    int p;
+    int userInp;
     
      do{
         printDivider();
         printf("Module Code: ZZ6309\n");
         printf("Module Name: Linux Operating System\n");
         printDivider();
-        printf("Menu:\t1.Insert New Student Record\n\t2.Show All Records\n\t3.Generate Records\n\t4.Update a Student Record\n\t5.Delete a Record\n\t6.Exit\n");
-        printf("\nEnter Your Choice : ");
-        scanf("%d", &p);
+        printf("\n");
+        printf("Menu:\t1.Show All Student Records\n\t2.Insert a New Student Record\n\t3.Update a Student Record\n\t4.Delete a Student Record\n\t5.Exit\n");
+        printf("\nSelect the Operation : ");
+        scanf("%d", &userInp);
 
       
 
-        switch (p)
+        switch (userInp)
         {
         case 1:
+            printAllData();
+            break;
+        case 2:
             printDivider();
             insertStd();
             break;
-        case 2:
-            printAllData();
-            break;
         case 3:
-            // Divider();
-            // generateRecords();
+            printDivider();
+            updateStd();
             break;
         case 4:
-            // Divider();
-            // updateRecord();
-            break;
-        case 5:
             printDivider();
             deleteStd();
             break;
-        case 6:
+        case 5:
             exit(0);
-            break;
+            break; 
         }
      }while(1);
     return 0;
@@ -72,14 +70,13 @@ int main(int argc, char const *argv[])
 
 void printAllData()
 {
-    printDivider();
 
     FILE *fd;
     student_marks student;
     int index = 1;
     int err_No;
     
-
+    printf("\n");
     printDivider();
     printf("| %-6s | %-20s | %-20s | %-20s | %-20s | %-20s  | \n","No" ,"Student Index", "Assignment 01",
                    "Assignment 02", "Project Marks", "Final Marks");
@@ -116,7 +113,7 @@ void printAllData()
             
         }
     }
-    
+    printDivider();
     printf("\n");
     fclose(fd);
 }
@@ -263,4 +260,80 @@ void deleteStd()
         printf("Delete unsuccessful\n");
     }
     
+}
+
+//update recode
+void updateStd()
+{
+    FILE *fd;
+    student_marks student;
+    int err_No;
+    // get the number of records in the file
+    char student_index[20];
+    //get the index of the student to update
+    printf("Enter student full index number to update: ");
+    scanf("%s", student_index); 
+
+
+    //open file with read option
+    fd = fopen("Student_Data.txt", "r+");
+    if (fd == NULL)
+    {
+        printf("Student_Data.txt: could not be opened");
+        perror("Student_Data.txt: \n");
+        printf("The error number is: %d\n",errno);
+    }
+
+    while (1)
+    {
+        //read one data from file 
+        fread(&student, sizeof(student_marks), 1, fd);
+        if (feof(fd))
+        {
+            printf("File is empty: Update Failed\n");
+            break;
+        }
+        if ((err_No = ferror(fd)) > 0)
+        {
+            printf("Failed to read from the file");
+            perror("Student_Data.txt: \n");
+            printf("The error number is: %d\n",errno);
+            exit(1);
+        }
+        else
+        {
+            //find student and update data
+            if(strcmp(student.student_index,student_index) == 0)
+            {
+                //move to student found position
+                fseek(fd,-sizeof(student_marks),SEEK_CUR);
+
+                printf("Enter assignment 01 new marks : ");
+                scanf("%f", &student.assignmt01_marks);
+                printf("Enter assignment 02 new marks : ");
+                scanf("%f", &student.assignmt02_marks);
+                printf("Enter project new marks : ");
+                scanf("%f", &student.project_marks);
+                printf("Enter finals new marks : ");
+                scanf("%f", &student.finalExam_marks);
+
+                // write one student data to file
+                int written = fwrite(&student, sizeof(student_marks), 1, fd); 
+
+                // check for error in write to file
+                if (written < 0) 
+                {
+                    printf("Student_Data.txt: failed to write to the file");
+                    perror("Student_Data.txt: \n");
+                    printf("The error number is: %d\n",errno);
+                    exit(1);
+                }
+                printf("Student record updated successfully\n");
+                break;
+
+            }
+        }
+    }
+    printf("\n");
+    fclose(fd);
 }
