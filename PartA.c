@@ -78,7 +78,7 @@ void printAllData()
     
     printf("\n");
     printDivider();
-    printf("| %-6s | %-20s | %-20s | %-20s | %-20s | %-20s  | \n","No" ,"Student Index", "Assignment 01",
+    printf("| %-5s | %-15s | %-15s | %-15s | %-15s | %-15s  | \n","No" ,"Student Index", "Assignment 01",
                    "Assignment 02", "Project Marks", "Final Marks");
     printDivider();
 
@@ -108,7 +108,7 @@ void printAllData()
         else
         {
             //print records
-            printf("| %-6d | %-20s | %-20.2f | %-20.2f | %-20.2f | %-20.2f  | \n",index ,student.student_index, student.assignmt01_marks, student.assignmt02_marks, student.project_marks, student.finalExam_marks);
+            printf("| %-5d | %-15s | %-15.2f | %-15.2f | %-15.2f | %-15.2f  | \n",index ,student.student_index, student.assignmt01_marks, student.assignmt02_marks, student.project_marks, student.finalExam_marks);
             index++;
             
         }
@@ -119,7 +119,7 @@ void printAllData()
 }
 
 void printDivider(){
-    printf("******************************************************************************************************************************\n");
+    printf("====================================================================================================\n");
 }
 
 
