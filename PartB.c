@@ -17,6 +17,7 @@ typedef struct student_marks
 float getMax();
 float getMin();
 float getAvg();
+int getLessThan5Count();
 
 
 int main(void)
@@ -261,3 +262,50 @@ float getAvg()
     fclose(fd);
     return avg;
 }
+
+
+int getLessThan5Count()
+{
+    FILE *fd;
+    student_marks student;
+    int stdCount=0;
+    int err_No;
+    
+    //open file "Student_Data.txt" with read option
+    fd = fopen("Student_Data.txt", "r");
+    if (fd == NULL)
+    {
+        printf("Student_Data.txt: File could not be opened ");
+        perror("Student_Data.txt: ");
+        printf("The error number is: %d\n", errno);
+        exit(1);
+    }
+    while (1)
+    {
+        //read a single data record from file 
+        fread(&student, sizeof(student_marks), 1, fd);
+        if (feof(fd))
+        {
+            break;
+        }
+        if ((err_No = ferror(fd)) > 0)
+        {
+            perror("fread Student_Data.txt ");
+            printf("ferror: %d\n", err_No);
+            exit(1);
+        }
+        else
+        {
+            if(student.assignmt01_marks*6.66667<5.0000)
+            {
+                    stdCount++;
+            }
+        }
+    }
+    
+    fclose(fd);
+    return stdCount;
+}
+
+
+
