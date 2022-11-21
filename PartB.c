@@ -19,7 +19,6 @@ float getMin();
 float getAvg();
 int getLessThan5Count();
 
-
 int main(void)
 {
     //Processes were used in following manner
@@ -27,7 +26,6 @@ int main(void)
     //  C1  = Calculate Min
     //  CC2 = Calculate Avg
     //  C2  = Calculate the number of students less than 5%
-
 
     int FD1[2];
     int FD2[2];
@@ -75,12 +73,37 @@ int main(void)
             }
             else if(PID3==0)//CC1
             {
-               
+                //printf("\nC1: Child process(CC1)created successfully");
+                        
+                float max = getMax();
+                
+                close(FD1[0]);
+                //write data in to file descriptor
+                int bytes_written = write(FD1[1],&max,sizeof(max));
+                close(FD1[1]);
+
+                if(bytes_written == -1)
+                {
+                    printf("\nCC1: Writing to pipe is failed");
+                    perror("\nCC1: Writing: ");
+                    printf("\nCC1: Error number is %d", errno);
+                }
                        
             }        
             else //C1
             {
-                
+                float min = getMin();
+            
+                close(FD2[0]);
+                int bytes_written = write(FD2[1],&min,sizeof(min));//write data in to file descriptor
+                close(FD2[1]);
+
+                if(bytes_written == -1)
+                {
+                    printf("\nC1: Writing to pipe is failed");
+                    perror("\nC1: Writing: ");
+                    printf("\nC1: Error number is %d", errno);
+                }
                         
             }     
                    
@@ -108,17 +131,100 @@ int main(void)
                 }
                 else if(PID4 == 0) //CC2
                 {
-                   
+                    //printf("\nC2: Child process(CC2)created successfully");
+
+                    float avg = getAvg();
+            
+                    close(FD3[0]);
+                    int bytes_written = write(FD3[1],&avg,sizeof(avg));//write data in to file descriptor
+                    close(FD3[1]);
+
+                    if(bytes_written == -1)
+                    {
+                        printf("\nCC2: Writing to pipe is failed");
+                        perror("\nCC2: Writing: ");
+                        printf("\nCC2: Error number is %d", errno);
+                    }
+
                 }
                 else //C2
                 {
-                   
+                    int lessThan5 = getLessThan5Count();
+            
+                    close(FD4[0]);
+                    int bytes_written = write(FD4[1],&lessThan5,sizeof(lessThan5));//write data in to file descriptor
+                    close(FD4[1]);
+
+                    if(bytes_written == -1)
+                    {
+                        printf("\nC2: Writing to pipe is failed");
+                        perror("\nC2: Writing: ");
+                        printf("\nC2: Error number is %d", errno);
+                    }
 
                 }
 
             }
             else //Parent
             {
+                float min, max, avg;
+                int lessThan5Count;
+
+                sleep(0.01);
+
+                close(FD1[1]);
+                int bytes_read1 = read(FD1[0], &max, sizeof(max));
+                close(FD1[0]);
+                        
+                if(bytes_read1==-1)
+                {
+                    printf("\nParent: Read from pipe1 is failed");
+                    perror("\nParent: Reading: ");
+                    printf("\nParent: Error number is %d", errno);
+                    exit(0);
+                }
+
+                close(FD2[1]);
+                int bytes_read2 = read(FD2[0], &min, sizeof(min));
+                close(FD2[0]);
+                        
+                if(bytes_read2==-1)
+                {
+                    printf("\nParent: Read from pipe2 is failed");
+                    perror("\nParent: Reading: ");
+                    printf("\nParent: Error number is %d", errno);
+                    exit(0);
+                }
+                
+                close(FD3[1]);
+                int bytes_read3 = read(FD3[0], &avg, sizeof(avg));
+                close(FD3[0]);
+                        
+                if(bytes_read3==-1)
+                {
+                    printf("\nParent: Read from pipe3 is failed");
+                    perror("\nParent: Reading: ");
+                    printf("\nParent: Error number is %d", errno);
+                    exit(0);
+                }
+
+                close(FD4[1]);
+                int bytes_read4 = read(FD4[0], &lessThan5Count, sizeof(lessThan5Count));
+                close(FD4[0]);
+                        
+                if(bytes_read4 ==-1)
+                {
+                    printf("\nParent: Read from pipe4 is failed");
+                    perror("\nParent: Reading: ");
+                    printf("\nParent: Error number is %d", errno);
+                    exit(0);
+                }
+
+                printf("\n\nAnalyzing Assignment 01 Marks sdf\n");
+                printf("================================\n");
+                printf("\nMaximum mark = %.2f\nMinimum mark =  %.2f\nAverage = %f\nNo of students less than 5%% = %d\n",max,min,avg,lessThan5Count);
+                printf("\n");
+                printf("================================\n");
 
 
             }
@@ -218,7 +324,6 @@ float getMin()
     return result;
 }
 
-
 float getAvg()
 {
     FILE *fd;
@@ -263,7 +368,6 @@ float getAvg()
     return avg;
 }
 
-
 int getLessThan5Count()
 {
     FILE *fd;
@@ -306,6 +410,3 @@ int getLessThan5Count()
     fclose(fd);
     return stdCount;
 }
-
-
-
