@@ -400,7 +400,7 @@ int getLessThan5Count()
         }
         else
         {
-            if(student.assignmt01_marks*6.66667<5.0000)
+            if((student.assignmt01_marks*100/15)<5.0000)
             {
                     stdCount++;
             }
