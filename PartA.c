@@ -5,10 +5,6 @@
 #include <errno.h>  // for error handling
 #include <stdbool.h>  
 
-#define ACTION_H_
-#define RANDOM_H_
-#define STUDENT_H_
-
 void printAllData(void);
 void insertStd(void);
 void updateStd();
