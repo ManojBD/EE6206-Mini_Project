@@ -21,7 +21,6 @@ typedef struct student_marks
     float finalExam_marks;
 } student_marks;
 
-void addRecord(student_marks student);
 
 int main(int argc, char const *argv[])
 {
@@ -128,6 +127,7 @@ void printDivider(){
 void insertStd()
 {
     student_marks student;
+    FILE *fd; 
 
     //Get user input for the new student record
     printf("Enter student index (Format: EG/2018/xxxx): ");
@@ -140,13 +140,6 @@ void insertStd()
     scanf("%f", &student.project_marks);
     printf("Enter final exam marks (Out of 50%%): ");
     scanf("%f", &student.finalExam_marks);
-    addRecord(student); //Calling "addRecord" function
-};
-
-//write student data to file
-void addRecord(student_marks student)
-{
-    FILE *fd; 
 
     //Open "Student_Data.txt" with append option
     fd = fopen("Student_Data.txt", "a+"); 
