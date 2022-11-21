@@ -59,6 +59,10 @@ int main(int argc, char const *argv[])
         case 5:
             exit(0);
             break; 
+        default:
+            printf("\n\nInvalid user input\n");
+            exit(0);
+            break;
         }
      }while(1);
     return 0;
