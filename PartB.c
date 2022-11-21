@@ -27,17 +27,19 @@ int main(void)
     //  CC2 = Calculate Avg
     //  C2  = Calculate the number of students less than 5%
 
+    //Defile file descriptors
     int FD1[2];
     int FD2[2];
     int FD3[2];
     int FD4[2];
+
+    //Create pipes
     int p1 = pipe(FD1);
     int p2 = pipe(FD2); 
     int p3 = pipe(FD3); 
     int p4 = pipe(FD4);
 
-    pid_t parentID = getpid();
-
+    //Error handling for all pipes
     if((p1==-1)||(p2==-1)||(p3==-1)||(p4==-1))
     {
         printf("\nPipe could not be created");
@@ -48,40 +50,45 @@ int main(void)
     else 
     {
         //printf("\nParent: Pipes created successfully");
-        pid_t PID1 = fork();
+        pid_t PID1 = fork();//fork
+
+        //Error handling for fork
         if(PID1==-1)
         {
-            //Error
             printf("\nChild process(C1) could not be created");
             perror("\nChild process(C1): ");
             printf("\nError number is %d", errno);
             exit(0);
             
         }
-        else if(PID1==0)    //C1
+        //C1
+        else if(PID1==0)    
         {  
             //printf("\nParent: Child process(C1)created successfully");
-            pid_t PID3 = fork();
+            pid_t PID3 = fork();//fork 
+
+            //Error handling for fork
             if(PID3==-1)
             { 
-                //Error
                 printf("\nC1: Child process(CC1) could not be created");
                 perror("\nC1: Child process(CC1): ");
                 printf("\nC1: Error number is %d", errno);
                 exit(0);
                         
             }
-            else if(PID3==0)//CC1
+            //CC1
+            else if(PID3==0)
             {
                 //printf("\nC1: Child process(CC1)created successfully");
                         
-                float max = getMax();
+                float max = getMax();//Get the maximum value
                 
                 close(FD1[0]);
-                //write data in to file descriptor
+                //write data in to the pipe, FD1
                 int bytes_written = write(FD1[1],&max,sizeof(max));
                 close(FD1[1]);
 
+                //Error handling for write
                 if(bytes_written == -1)
                 {
                     printf("\nCC1: Writing to pipe is failed");
@@ -89,15 +96,18 @@ int main(void)
                     printf("\nCC1: Error number is %d", errno);
                 }
                        
-            }        
-            else //C1
+            }  
+            //C1      
+            else 
             {
-                float min = getMin();
+                float min = getMin();//Get the minimum value
             
                 close(FD2[0]);
-                int bytes_written = write(FD2[1],&min,sizeof(min));//write data in to file descriptor
+                //write data in to the pipe, FD2
+                int bytes_written = write(FD2[1],&min,sizeof(min));
                 close(FD2[1]);
 
+                //Error handling for write
                 if(bytes_written == -1)
                 {
                     printf("\nC1: Writing to pipe is failed");
@@ -108,10 +118,12 @@ int main(void)
             }     
                    
         }
-        else //Parent process
+        //Parent process
+        else 
         {
-            pid_t PID2=fork();
+            pid_t PID2=fork();//fork
 
+            //Error handling for fork
             if(PID2 == -1)
             {
                 printf("\nChild process(C2) could not be created");
@@ -119,9 +131,12 @@ int main(void)
                 printf("\nError number is %d", errno);
                 exit(0);
             }
-            else if(PID2 == 0) //C2
+            //C2
+            else if(PID2 == 0) 
             {
-                pid_t PID4 = fork();
+                pid_t PID4 = fork();//fork
+
+                //Error handling for fork
                 if(PID4 == -1)
                 {
                     printf("\nC2: Child process(CC2) could not be created");
@@ -129,16 +144,19 @@ int main(void)
                     printf("\nC2: Error number is %d", errno);
                     exit(0);
                 }
-                else if(PID4 == 0) //CC2
+                 //CC2
+                else if(PID4 == 0)
                 {
                     //printf("\nC2: Child process(CC2)created successfully");
 
-                    float avg = getAvg();
+                    float avg = getAvg();//Geth the average value
             
                     close(FD3[0]);
+                    //write data in to the pipe, FD3
                     int bytes_written = write(FD3[1],&avg,sizeof(avg));//write data in to file descriptor
                     close(FD3[1]);
 
+                    //Error handling for write
                     if(bytes_written == -1)
                     {
                         printf("\nCC2: Writing to pipe is failed");
@@ -147,14 +165,17 @@ int main(void)
                     }
 
                 }
-                else //C2
+                //C2
+                else 
                 {
-                    int lessThan5 = getLessThan5Count();
+                    int lessThan5 = getLessThan5Count();//Get the number of students who has less than 5% marks
             
                     close(FD4[0]);
+                    //write data in to the pipe, FD4
                     int bytes_written = write(FD4[1],&lessThan5,sizeof(lessThan5));//write data in to file descriptor
                     close(FD4[1]);
 
+                    //Error handling for write
                     if(bytes_written == -1)
                     {
                         printf("\nC2: Writing to pipe is failed");
@@ -165,17 +186,20 @@ int main(void)
                 }
 
             }
-            else //Parent
+            //Parent
+            else 
             {
                 float min, max, avg;
                 int lessThan5Count;
 
                 sleep(0.01);
 
+                //Read from pipe FD1
                 close(FD1[1]);
                 int bytes_read1 = read(FD1[0], &max, sizeof(max));
                 close(FD1[0]);
-                        
+                
+                //Error handling for read
                 if(bytes_read1==-1)
                 {
                     printf("\nParent: Read from pipe1 is failed");
@@ -184,10 +208,12 @@ int main(void)
                     exit(0);
                 }
 
+                //Read from pipe FD2
                 close(FD2[1]);
                 int bytes_read2 = read(FD2[0], &min, sizeof(min));
                 close(FD2[0]);
-                        
+                
+                //Error handling for read
                 if(bytes_read2==-1)
                 {
                     printf("\nParent: Read from pipe2 is failed");
@@ -196,10 +222,12 @@ int main(void)
                     exit(0);
                 }
                 
+                //Read from pipe FD3
                 close(FD3[1]);
                 int bytes_read3 = read(FD3[0], &avg, sizeof(avg));
                 close(FD3[0]);
-                        
+                
+                //Error handling for read
                 if(bytes_read3==-1)
                 {
                     printf("\nParent: Read from pipe3 is failed");
@@ -208,10 +236,12 @@ int main(void)
                     exit(0);
                 }
 
+                //Read from pipe FD4
                 close(FD4[1]);
                 int bytes_read4 = read(FD4[0], &lessThan5Count, sizeof(lessThan5Count));
                 close(FD4[0]);
-                        
+
+                //Error handling for read 
                 if(bytes_read4 ==-1)
                 {
                     printf("\nParent: Read from pipe4 is failed");
@@ -220,11 +250,11 @@ int main(void)
                     exit(0);
                 }
 
-                printf("\n\nAnalyzing Assignment 01 Marks sdf\n");
-                printf("================================\n");
-                printf("\nMaximum mark = %.2f\nMinimum mark =  %.2f\nAverage = %f\nNo of students less than 5%% = %d\n",max,min,avg,lessThan5Count);
+                printf("\n\nAnalyzing Assignment 01 Marks\n");
+                printf("=============================\n");
+                printf("\nMaximum mark = %.2f\nMinimum mark =  %.2f\nAverage = %.2f\nNo of students less than 5%% = %d\n",max,min,avg,lessThan5Count);
                 printf("\n");
-                printf("================================\n");
+                printf("=============================\n");
 
 
             }
