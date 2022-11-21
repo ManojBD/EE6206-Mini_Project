@@ -3,7 +3,7 @@
 #include <stdlib.h> // for exit function
 #include <string.h> // for manipulating arrays of characters.
 #include <errno.h>  // for error handling
-#include <stdbool.h>  
+
 
 void printAllData(void);
 void insertStd(void);
@@ -124,32 +124,33 @@ void printDivider(){
 
 
 
-//Function to insert new student
+//Function to insert new student record
 void insertStd()
 {
     student_marks student;
 
-    printf("Enter student index : ");
+    //Get user input for the new student record
+    printf("Enter student index (Format: EG/2018/xxxx): ");
     scanf("%s", student.student_index);
-    printf("Enter assignment 01 marks : ");
+    printf("Enter assignment 01 marks (Out of 15%%): ");
     scanf("%f", &student.assignmt01_marks);
-    printf("Enter assignment 02 marks : ");
+    printf("Enter assignment 02 marks (Out of 15%%) : ");
     scanf("%f", &student.assignmt02_marks);
-    printf("Enter project marks : ");
+    printf("Enter project marks (Out of 20%%): ");
     scanf("%f", &student.project_marks);
-    printf("Enter final exam marks : ");
+    printf("Enter final exam marks (Out of 50%%): ");
     scanf("%f", &student.finalExam_marks);
-    addRecord(student);
+    addRecord(student); //Calling "addRecord" function
 };
 
 //write student data to file
 void addRecord(student_marks student)
 {
-    FILE *fd;
+    FILE *fd; 
 
-    //Open "Student_Data.txt" with append
+    //Open "Student_Data.txt" with append option
     fd = fopen("Student_Data.txt", "a+"); 
-    if (fd == NULL)
+    if (fd == NULL) //Errro handling for fopen
     {
         printf("Student_Data.txt: could not be opened");
         perror("Student_Data.txt: \n");
@@ -157,39 +158,39 @@ void addRecord(student_marks student)
         exit(1);
     }
 
-    // write student data to Student_Data.txt
+    // write user input student data to "Student_Data.txt"
     int written = fwrite(&student, sizeof(student_marks), 1, fd); 
 
-    // Error handling in write function
+    // Error handling for fwrite function
     if (written < 0) 
     {
         printf("Student_Data.txt: could not be written into student_Data.txt");
         perror("Student_Data.txt: \n");
         printf("The error number is: %d\n",errno);
-
     }
-
-    //Close the file descriptor
+    else
+    {
+        printf("\nStudent record successfully inserted\n");
+    }
+    //Close the file descriptor fd
     fclose(fd); 
 }
 
-//Function for delete a student record based on the index no
+//Function to delete a student record based on the index no
 void deleteStd()
 {
 
-    FILE *fd1,*fd2;
+    FILE *fd1,*fd2; //file descriptors
     student_marks student;
     int err_No;
     char student_index[20];
-    //read student index number
-    printf("Enter full student index number to delete: ");
-    scanf("%s", student_index);
     int status=0;
 
-    //open file with read write options
+    //Open "Student_Data.txt" and "Student_Data_Temp.txt" files
     fd1 = fopen("Student_Data.txt", "r+");
     fd2 = fopen("Student_Data_Temp.txt","a+");
-    if (fd1 == NULL || fd2 == NULL)
+    //Error handling for fopen
+    if (fd1 == NULL || fd2 == NULL) 
     {
         printf("Student_Data.txt, Student_Data_Temp.txt: failed to open file");
         perror("Student_Data.txt, Student_Data_Temp.txt : \n");
@@ -197,9 +198,14 @@ void deleteStd()
         exit(1);
     }
 
+
+    //Get the index of the student as a user input
+    printf("Enter full student index number to delete (Format: EG/2018/xxxx): ");
+    scanf("%s", student_index);
+
     while (1)
     {
-        //read student data from "Student_Data.txt"
+        //Read student data from "Student_Data.txt"
         fread(&student, sizeof(student_marks), 1, fd1);
         if (feof(fd1))
         {
@@ -207,7 +213,7 @@ void deleteStd()
         }
         if ((err_No = ferror(fd1)) > 0)
         {
-            printf("Failed to read from the file");
+            printf("Student_Data.txt: Failed to read from the file");
             perror("Student_Data.txt: \n");
             printf("The error number is: %d\n",errno);
             exit(1);
@@ -220,11 +226,12 @@ void deleteStd()
                 //Copy student data to "Student_Data_Copied.txt"
                 int written = fwrite(&student, sizeof(student_marks), 1, fd2); 
                 
-                //Error handing for write
+                //Error handing for fwrite
                 if (written < 0) 
                 {
-                    printf("The error number is: %d\n",errno);
+                    printf("Student_Data_Temp.txt: Failed to write to file");
                     perror("fwrite Error: ");
+                    printf("The error number is: %d\n",errno);
                     exit(1);
                 } 
             }
@@ -235,9 +242,9 @@ void deleteStd()
         }
     }
     printf("\n");
+    //Closing file descriptors
     fclose(fd1);
     fclose(fd2);
-    
     //Removing "Student_Data.txt" and error handling
     if(remove("Student_Data.txt") != 0) 
     {
@@ -245,7 +252,6 @@ void deleteStd()
         printf("The error No is: %d\n", errno);
         exit(1);
     }
-
     //Renaming "Student_Data_Temp.txt" into "Student_Data.txt" and error handling
     if(rename("Student_Data_Temp.txt","Student_Data.txt") != 0) 
     {
@@ -253,31 +259,29 @@ void deleteStd()
         printf("The error no is: %d\n", errno);
         exit(1);
     }
-
     if(status){
         printf("Student deleted successfully\n");
     }else{
         printf("Delete unsuccessful\n");
     }
-    
 }
 
-//update recode
+//Function for updating a student record
 void updateStd()
 {
     FILE *fd;
     student_marks student;
     int err_No;
-    // get the number of records in the file
     char student_index[20];
-    //get the index of the student to update
-    printf("Enter student full index number to update: ");
+
+    //Get the index of the student as a user input
+    printf("Enter student full index number to update (Format: EG/2018/xxxx): ");
     scanf("%s", student_index); 
 
 
-    //open file with read option
+    //Open "Student_Data.txt" file with "r+" permissions
     fd = fopen("Student_Data.txt", "r+");
-    if (fd == NULL)
+    if (fd == NULL) //Error handling for fopen
     {
         printf("Student_Data.txt: could not be opened");
         perror("Student_Data.txt: \n");
@@ -286,14 +290,14 @@ void updateStd()
 
     while (1)
     {
-        //read one data from file 
+        //Read a single data record from "Student_Data.txt" file 
         fread(&student, sizeof(student_marks), 1, fd);
         if (feof(fd))
         {
-            printf("File is empty: Update Failed\n");
+            printf("Could not be updated\n");
             break;
         }
-        if ((err_No = ferror(fd)) > 0)
+        if ((err_No = ferror(fd)) > 0)//Error handling
         {
             printf("Failed to read from the file");
             perror("Student_Data.txt: \n");
@@ -302,25 +306,26 @@ void updateStd()
         }
         else
         {
-            //find student and update data
+            //Search for the relevant student index
             if(strcmp(student.student_index,student_index) == 0)
             {
-                //move to student found position
+                
                 fseek(fd,-sizeof(student_marks),SEEK_CUR);
 
-                printf("Enter assignment 01 new marks : ");
+                //Get the new student data as a user input
+                printf("Enter new assignment 01 marks (Out of 15%%): ");
                 scanf("%f", &student.assignmt01_marks);
-                printf("Enter assignment 02 new marks : ");
+                printf("Enter new assignment 02 marks (Out of 15%%): ");
                 scanf("%f", &student.assignmt02_marks);
-                printf("Enter project new marks : ");
+                printf("Enter new project marks (Out of 20%%): ");
                 scanf("%f", &student.project_marks);
-                printf("Enter finals new marks : ");
+                printf("Enter new finals marks (Out of 50%%): ");
                 scanf("%f", &student.finalExam_marks);
 
-                // write one student data to file
+                // write to the file
                 int written = fwrite(&student, sizeof(student_marks), 1, fd); 
 
-                // check for error in write to file
+                // Error handling for write
                 if (written < 0) 
                 {
                     printf("Student_Data.txt: failed to write to the file");
@@ -328,12 +333,12 @@ void updateStd()
                     printf("The error number is: %d\n",errno);
                     exit(1);
                 }
-                printf("Student record updated successfully\n");
+                printf("\nStudent record updated successfully\n");
                 break;
 
             }
         }
     }
     printf("\n");
-    fclose(fd);
+    fclose(fd); //Close the file descriptor
 }
