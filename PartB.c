@@ -351,7 +351,7 @@ float getMin()
            
         }
     }
-    
+    result = min;
     fclose(fd);
     return result;
 }
