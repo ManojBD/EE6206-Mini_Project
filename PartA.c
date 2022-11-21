@@ -9,8 +9,9 @@
 #define RANDOM_H_
 #define STUDENT_H_
 
-void allData(void);
-void Divider();
+void printAllData(void);
+void insertStd(void);
+void printDivider();
 
 // structure definition of Student Data
 typedef struct student_marks
@@ -22,17 +23,17 @@ typedef struct student_marks
     float finalExam_marks;
 } student_marks;
 
-void writeStudentRecord(student_marks student);
+void addRecord(student_marks student);
 
 int main(int argc, char const *argv[])
 {
     int p;
     
      do{
-        Divider();
+        printDivider();
         printf("Module Code: ZZ6309\n");
         printf("Module Name: Linux Operating System\n");
-        Divider();
+        printDivider();
         printf("Menu:\t1.Insert New Student Record\n\t2.Show All Records\n\t3.Generate Records\n\t4.Update a Student Record\n\t5.Delete a Record\n\t6.Exit\n");
         printf("\nEnter Your Choice : ");
         scanf("%d", &p);
@@ -42,11 +43,11 @@ int main(int argc, char const *argv[])
         switch (p)
         {
         case 1:
-            //Divider();
-            //insertStudent();
+            printDivider();
+            insertStd();
             break;
         case 2:
-            allData();
+            printAllData();
             break;
         case 3:
             // Divider();
@@ -68,9 +69,9 @@ int main(int argc, char const *argv[])
     return 0;
 }
 
-void allData()
+void printAllData()
 {
-    Divider();
+    printDivider();
 
     FILE *fd;
     student_marks student;
@@ -78,10 +79,10 @@ void allData()
     int err_No;
     
 
-    Divider();
+    printDivider();
     printf("| %-6s | %-20s | %-20s | %-20s | %-20s | %-20s  | \n","No" ,"Student Index", "Assignment 01",
                    "Assignment 02", "Project Marks", "Final Marks");
-    Divider();
+    printDivider();
 
     //open file with read option
     fd = fopen("Student_Data.txt", "r");
@@ -119,6 +120,57 @@ void allData()
     fclose(fd);
 }
 
-void Divider(){
+void printDivider(){
     printf("******************************************************************************************************************************\n");
+}
+
+
+
+//Function to insert new student
+void insertStd()
+{
+    student_marks student;
+
+    printf("Enter student index : ");
+    scanf("%s", student.student_index);
+    printf("Enter assignment 01 marks : ");
+    scanf("%f", &student.assignmt01_marks);
+    printf("Enter assignment 02 marks : ");
+    scanf("%f", &student.assignmt02_marks);
+    printf("Enter project marks : ");
+    scanf("%f", &student.project_marks);
+    printf("Enter final exam marks : ");
+    scanf("%f", &student.finalExam_marks);
+    addRecord(student);
+};
+
+//write student data to file
+void addRecord(student_marks student)
+{
+    FILE *fd;
+
+    //Open "Student_Data.txt" with append
+    fd = fopen("Student_Data.txt", "a+"); 
+    if (fd == NULL)
+    {
+        printf("Student_Data.txt: could not be opened");
+        perror("Student_Data.txt: \n");
+        printf("The error number is: %d\n",errno);
+        exit(1);
+    }
+
+    // write student data to Student_Data.txt
+    int written = fwrite(&student, sizeof(student_marks), 1, fd); 
+
+    // Error handling in write function
+    if (written < 0) 
+    {
+        printf("Student_Data.txt: could not be written into student_Data.txt");
+        perror("Student_Data.txt: \n");
+        printf("The error number is: %d\n",errno);
+
+    }
+
+    //Close the file descriptor
+    fclose(fd); 
 }
