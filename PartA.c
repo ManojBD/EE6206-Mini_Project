@@ -11,7 +11,8 @@
 
 void printAllData(void);
 void insertStd(void);
-void printDivider();
+void deleteStd();
+void printDivider(void);
 
 // structure definition of Student Data
 typedef struct student_marks
@@ -58,8 +59,8 @@ int main(int argc, char const *argv[])
             // updateRecord();
             break;
         case 5:
-            // Divider();
-            // deleteRecord();
+            printDivider();
+            deleteStd();
             break;
         case 6:
             exit(0);
@@ -173,4 +174,93 @@ void addRecord(student_marks student)
 
     //Close the file descriptor
     fclose(fd); 
+}
+
+//Function for delete a student record based on the index no
+void deleteStd()
+{
+
+    FILE *fd1,*fd2;
+    student_marks student;
+    int err_No;
+    char student_index[20];
+    //read student index number
+    printf("Enter full student index number to delete: ");
+    scanf("%s", student_index);
+    int status=0;
+
+    //open file with read write options
+    fd1 = fopen("Student_Data.txt", "r+");
+    fd2 = fopen("Student_Data_Temp.txt","a+");
+    if (fd1 == NULL || fd2 == NULL)
+    {
+        printf("Student_Data.txt, Student_Data_Temp.txt: failed to open file");
+        perror("Student_Data.txt, Student_Data_Temp.txt : \n");
+        printf("The error number is: %d\n",errno);
+        exit(1);
+    }
+
+    while (1)
+    {
+        //read student data from "Student_Data.txt"
+        fread(&student, sizeof(student_marks), 1, fd1);
+        if (feof(fd1))
+        {
+            break;
+        }
+        if ((err_No = ferror(fd1)) > 0)
+        {
+            printf("Failed to read from the file");
+            perror("Student_Data.txt: \n");
+            printf("The error number is: %d\n",errno);
+            exit(1);
+        }
+        else
+        {
+            //Find the relevant index in "Student_Data.txt"
+            if(strcmp(student.student_index,student_index) != 0)
+            {
+                //Copy student data to "Student_Data_Copied.txt"
+                int written = fwrite(&student, sizeof(student_marks), 1, fd2); 
+                
+                //Error handing for write
+                if (written < 0) 
+                {
+                    printf("The error number is: %d\n",errno);
+                    perror("fwrite Error: ");
+                    exit(1);
+                } 
+            }
+            else
+            {
+                status = 1;
+            }
+        }
+    }
+    printf("\n");
+    fclose(fd1);
+    fclose(fd2);
+    
+    //Removing "Student_Data.txt" and error handling
+    if(remove("Student_Data.txt") != 0) 
+    {
+        perror("File could not be removed: ");
+        printf("The error No is: %d\n", errno);
+        exit(1);
+    }
+
+    //Renaming "Student_Data_Temp.txt" into "Student_Data.txt" and error handling
+    if(rename("Student_Data_Temp.txt","Student_Data.txt") != 0) 
+    {
+        perror("File could not be renamed: ");
+        printf("The error no is: %d\n", errno);
+        exit(1);
+    }
+
+    if(status){
+        printf("Student deleted successfully\n");
+    }else{
+        printf("Delete unsuccessful\n");
+    }
+    
 }
